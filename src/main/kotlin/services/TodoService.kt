@@ -57,8 +57,9 @@ class TodoService(private val todoRepository: ITodoRepository) : ITodoService {
             for (todo in matchTodos) {
                 val status = if (todo.isFinished) "Selesai" else "Belum Selesai"
                 println("${todo.id} | ${todo.title} | $status")
-                println()
+
             }
+            println()
         }
     }
 

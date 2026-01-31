@@ -28,9 +28,28 @@ class TodoRepository : ITodoRepository {
     }
 
     override fun sortTodos(sortBy: String, isAscending: Boolean) {
+        val category = sortBy.trim().lowercase()
+
+        // 1. Logika Khusus untuk 'finished' Descending (n)
+        if (category == "finished" && !isAscending) {
+            // STEP A: Urutkan dulu agar yang 'Selesai' naik ke paling atas
+            // Kita pakai stable sort bawaan Kotlin agar urutan sisanya tidak berubah dulu
+            data.sortWith(compareByDescending<Todo> { it.isFinished })
+
+            // STEP B: Pisahkan yang Belum Selesai, balikkan urutannya, lalu gabung lagi
+            val finishedTasks = data.filter { it.isFinished }
+            val unFinishedTasks = data.filter { !it.isFinished }.reversed()
+
+            data.clear()
+            data.addAll(finishedTasks)
+            data.addAll(unFinishedTasks)
+
+            return // Selesai, jangan jalankan kriteria di bawah
+        }
+
         val comparator = when (sortBy.trim().lowercase()) {
             // Tambahkan .thenBy { it.id } agar jika title/finished sama, ID yang menentukan
-            "title" -> compareBy<Todo> { it.title.lowercase() }.thenBy { it.id }
+            "title" -> compareBy<Todo> { it.title }.thenBy { it.id }
             "finished" -> compareBy<Todo> { it.isFinished }.thenBy { it.id }
             "id" -> compareBy<Todo> { it.id }
             else -> compareBy<Todo> { it.id } // Default ke ID jika tidak dikenal
