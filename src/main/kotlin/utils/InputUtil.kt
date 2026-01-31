@@ -1,4 +1,8 @@
-package org.delcom.utils
+package utils
 
-class InputUtil {
+object InputUtil {
+    fun input(info: String): String {
+        print("$info : ")
+        return readlnOrNull() ?: ""
+    }
 }
